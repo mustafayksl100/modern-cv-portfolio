@@ -168,6 +168,11 @@ img {
     transition: 0.3s;
 }
 
+/* Mobile Menu - Hidden by default on desktop */
+.mobile-menu {
+    display: none;
+}
+
 /* Hero Section */
 .hero {
     min-height: 100vh;
@@ -419,6 +424,52 @@ img {
 .stat-label {
     color: var(--primary-color);
     font-size: 0.9rem;
+}
+
+/* Education Section */
+.education-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+}
+
+.edu-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.edu-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.edu-content h3 {
+    color: var(--text-main);
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.edu-content h4 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.edu-content p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.edu-year {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    background: rgba(56, 189, 248, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 0.5rem;
 }
 
 /* Skills Section */
@@ -701,6 +752,30 @@ img {
 
 .made-with i {
     color: #ef4444;
+}
+
+/* CV Buttons */
+.nav-cv-btn {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-cv-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.mobile-cv-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
 }
 
 /* Animations Logic classes */
