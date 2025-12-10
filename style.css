@@ -614,6 +614,115 @@ img {
     color: var(--primary-color);
 }
 
+/* Hiring/Looking for Work Section */
+.hiring-section {
+    padding: 60px 0;
+}
+
+.hiring-card {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 3rem;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.1) 100%);
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hiring-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+.hiring-icon {
+    font-size: 4rem;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.hiring-content {
+    flex: 1;
+}
+
+.hiring-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: #0f172a;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    to {
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+    }
+}
+
+.hiring-content h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.hiring-content p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.hiring-content .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .hiring-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .hiring-icon {
+        font-size: 3rem;
+    }
+
+    .hiring-content h2 {
+        font-size: 1.5rem;
+    }
+}
+
 /* Contact Section */
 .contact-wrapper {
     display: grid;
