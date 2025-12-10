@@ -619,25 +619,17 @@ img {
     padding: 60px 0;
 }
 
+.hiring-section .container {
+    max-width: 900px;
+}
+
 .hiring-card {
     display: flex;
     align-items: center;
     gap: 2.5rem;
-    padding: 3rem;
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.1) 100%);
-    border: 2px solid rgba(56, 189, 248, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.hiring-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    padding: 2.5rem;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.05) 0%, rgba(129, 140, 248, 0.05) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 .hiring-icon {
