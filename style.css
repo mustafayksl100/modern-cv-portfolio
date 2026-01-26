@@ -860,6 +860,16 @@ img {
     resize: vertical;
 }
 
+.form-group input:focus~label,
+.form-group input:not(:placeholder-shown)~label,
+.form-group textarea:focus~label,
+.form-group textarea:not(:placeholder-shown)~label {
+    top: -0.6rem;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    background: var(--bg-color);
+}
+
 .form-group input:focus,
 .form-group textarea:focus {
     border-color: var(--primary-color);
@@ -875,16 +885,6 @@ img {
     transition: var(--transition-medium);
     padding: 0 0.4rem;
     background: transparent;
-}
-
-.form-group input:focus~label,
-.form-group input:not(:placeholder-shown)~label,
-.form-group textarea:focus~label,
-.form-group textarea:not(:placeholder-shown)~label {
-    top: -0.6rem;
-    font-size: 0.85rem;
-    color: var(--primary-color);
-    background: var(--bg-color);
 }
 
 .submit-btn {
