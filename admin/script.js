@@ -7,7 +7,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyCpi3iELwp7A87xUHDM8YZ35ynTS-wi2sQ",
     authDomain: "modern-portfolio-2b161.firebaseapp.com",
     projectId: "modern-portfolio-2b161",
-    storageBucket: "modern-portfolio-2b161.firebasestorage.app",
+    storageBucket: "modern-portfolio-2b161.appspot.com", // Bazı projelerde .firebasestorage.app yerine bu geçerlidir
     messagingSenderId: "901473446983",
     appId: "1:901473446983:web:edbd764d29fb79ee295562",
     measurementId: "G-V4FMKLMGPQ"
@@ -17,6 +17,12 @@ firebase.initializeApp(firebaseConfig);
 const db      = firebase.firestore();
 const auth    = firebase.auth();
 const storage = firebase.storage();
+
+// Hata ayıklama için auth durumunu kontrol edelim
+auth.onAuthStateChanged(user => {
+    if (user) console.log("Firebase Auth: Giriş yapılmış -", user.email);
+    else console.warn("Firebase Auth: Oturum açık değil!");
+});
 
 // ════════════════════════════════════════════════════════════
 //  LOGIN & AUTH STATE
@@ -376,21 +382,25 @@ function initImageUpload(fieldId) {
         const ext      = file.name.split('.').pop();
         const fileName = `projects/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
         const ref      = storage.ref(fileName);
-        const task     = ref.put(file);
+        console.log('Yükleme başlatılıyor:', fileName);
+        const task = ref.put(file);
 
         task.on('state_changed',
             (snap) => {
                 const p = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                console.log('Yükleme ilerlemesi:', p + '%');
                 bar.style.width  = `${p}%`;
                 pct.textContent  = `${p}%`;
             },
             (err) => {
-                console.error('Yükleme hatası:', err);
-                showToast(getUploadErrorMessage(err), 'error');
+                console.error('FIREBASE UPLOAD ERROR:', err);
+                // Kullanıcıya tam hata kodunu gösterelim (auth/unauthorized vb)
+                showToast(`Yükleme Hatası: ${err.code} - ${getUploadErrorMessage(err)}`, 'error');
                 progress.style.display = 'none';
                 zone.classList.remove('uploading');
             },
             async () => {
+                console.log('Yükleme tamamlandı, URL alınıyor...');
                 const downloadURL = await ref.getDownloadURL();
                 urlInput.value         = downloadURL;
                 progress.style.display = 'none';
@@ -507,8 +517,15 @@ function syncProjectUploadUi(url = '') {
     if (pct) pct.textContent = '0%';
 
     if (cleanUrl) {
-        preview.src = cleanUrl;
-        preview.style.display = 'block';
+        // Admin paneli /admin/ klasöründe, görseller /img/ klasöründe.
+        // Eğer yerel bir yol girildiyse (img/ ile başlıyorsa), önizleme için başına ../ ekleyelim.
+        let previewUrl = cleanUrl;
+        if (cleanUrl.startsWith('img/') || cleanUrl.startsWith('./img/')) {
+            previewUrl = '../' + (cleanUrl.startsWith('./') ? cleanUrl.substring(2) : cleanUrl);
+        }
+
+        preview.src            = previewUrl;
+        preview.style.display  = 'block';
         zoneBody.style.display = 'none';
         clearBtn.style.display = 'flex';
         zone.classList.add('has-image');
