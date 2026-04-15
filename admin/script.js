@@ -386,7 +386,7 @@ function initImageUpload(fieldId) {
             },
             (err) => {
                 console.error('Yükleme hatası:', err);
-                showToast('Görsel yüklenemedi! Firebase Storage kurallarını kontrol edin.', 'error');
+                showToast(getUploadErrorMessage(err), 'error');
                 progress.style.display = 'none';
                 zone.classList.remove('uploading');
             },
@@ -429,6 +429,58 @@ function sortByOrder(docs) {
     return docs.sort((a, b) => (a.data().order || 0) - (b.data().order || 0));
 }
 
+function getUploadErrorMessage(err) {
+    const code = err?.code || '';
+
+    if (code === 'storage/unauthorized') {
+        return 'Görsel yüklenemedi: Firebase Storage kuralları bu kullanıcıya izin vermiyor.';
+    }
+
+    if (code === 'storage/canceled') {
+        return 'Görsel yükleme işlemi iptal edildi.';
+    }
+
+    if (code === 'storage/invalid-default-bucket' || code === 'storage/bucket-not-found') {
+        return 'Görsel yüklenemedi: Firebase Storage bucket ayarı eksik veya hatalı.';
+    }
+
+    if (code === 'storage/quota-exceeded') {
+        return 'Görsel yüklenemedi: Storage kotası dolmuş veya plan yükseltmesi gerekiyor.';
+    }
+
+    return 'Görsel yüklenemedi. Firebase Storage yapılandırmasını kontrol edin.';
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function sanitizeIconClass(value, fallback) {
+    const raw = String(value || '').trim();
+    return /^[a-z0-9 -]+$/i.test(raw) ? raw : fallback;
+}
+
+function sanitizeUrl(value, fallback = '', options = {}) {
+    const { allowRelative = true } = options;
+    const raw = String(value || '').trim();
+    if (!raw) return fallback;
+
+    const hasScheme = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(raw);
+    if (allowRelative && !hasScheme) return raw;
+
+    try {
+        const parsed = new URL(raw, window.location.origin);
+        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : fallback;
+    } catch {
+        return fallback;
+    }
+}
+
 const editState = {
     projects: null,
     education: null,
@@ -445,7 +497,7 @@ function syncProjectUploadUi(url = '') {
     const zone = document.getElementById('p-img-zone');
     const bar = document.getElementById('p-img-bar');
     const pct = document.getElementById('p-img-pct');
-    const cleanUrl = String(url || '').trim();
+    const cleanUrl = sanitizeUrl(url, '', { allowRelative: true });
 
     if (!preview || !zoneBody || !clearBtn || !progress || !zone) return;
 
@@ -826,14 +878,15 @@ async function loadProjects() {
 
 function makeProjectCard(id, data) {
     const desc = (data.desc || '').trim();
+    const imageUrl = sanitizeUrl(data.img, '', { allowRelative: true });
     const el = document.createElement('div');
     el.className = `list-item${editState.projects === id ? ' is-editing' : ''}`;
     el.innerHTML = `
-        <img class="item-thumb" src="${data.img || ''}" alt="${data.title}" onerror="this.src='https://placehold.co/80x60/0d1221/6366f1?text=IMG'">
+        <img class="item-thumb" src="${imageUrl}" alt="${escapeHtml(data.title || '')}" onerror="this.src='https://placehold.co/80x60/0d1221/6366f1?text=IMG'">
         <div class="item-info">
-            <h4>${data.title}</h4>
-            <p class="item-meta">${(data.tags || []).join(' · ')}</p>
-            ${desc ? `<p class="item-desc">${desc}</p>` : ''}
+            <h4>${escapeHtml(data.title || '')}</h4>
+            <p class="item-meta">${(data.tags || []).map(tag => escapeHtml(tag)).join(' · ')}</p>
+            ${desc ? `<p class="item-desc">${escapeHtml(desc)}</p>` : ''}
         </div>
         <div class="list-item-actions">
             <button class="btn btn-edit btn-sm" data-action="edit" title="Duzenle">
@@ -915,12 +968,13 @@ async function loadEducation() {
 function makeEducationCard(id, data) {
     const el = document.createElement('div');
     el.className = `list-item${editState.education === id ? ' is-editing' : ''}`;
+    const iconClass = sanitizeIconClass(data.icon, 'fas fa-graduation-cap');
     el.innerHTML = `
-        <div class="item-icon-wrap"><i class="${data.icon || 'fas fa-graduation-cap'}"></i></div>
+        <div class="item-icon-wrap"><i class="${iconClass}"></i></div>
         <div class="item-info">
-            <h4>${data.degree || data.school}</h4>
-            <p class="item-meta">${data.school} &middot; ${data.year}</p>
-            ${(data.description || '').trim() ? `<p class="item-desc">${data.description.trim()}</p>` : ''}
+            <h4>${escapeHtml(data.degree || data.school || '')}</h4>
+            <p class="item-meta">${escapeHtml(data.school || '')} &middot; ${escapeHtml(data.year || '')}</p>
+            ${(data.description || '').trim() ? `<p class="item-desc">${escapeHtml(data.description.trim())}</p>` : ''}
         </div>
         <div class="list-item-actions">
             <button class="btn btn-edit btn-sm" data-action="edit" title="Duzenle">
@@ -999,12 +1053,13 @@ async function loadSkills() {
 function makeSkillCard(id, data) {
     const el = document.createElement('div');
     el.className = `list-item${editState.skills === id ? ' is-editing' : ''}`;
+    const iconClass = sanitizeIconClass(data.icon, 'fas fa-code');
     el.innerHTML = `
-        <div class="item-icon-wrap"><i class="${data.icon || 'fas fa-code'}"></i></div>
+        <div class="item-icon-wrap"><i class="${iconClass}"></i></div>
         <div class="item-info" style="flex:1">
-            <h4>${data.name}</h4>
+            <h4>${escapeHtml(data.name || '')}</h4>
             <div class="skill-mini-bar"><div class="skill-mini-fill" style="width:${data.level}%"></div></div>
-            <p class="item-meta">${data.levelLabel || ''} &middot; ${data.level}%</p>
+            <p class="item-meta">${escapeHtml(data.levelLabel || '')} &middot; ${escapeHtml(data.level || 0)}%</p>
         </div>
         <div class="list-item-actions">
             <button class="btn btn-edit btn-sm" data-action="edit" title="Duzenle">
@@ -1079,9 +1134,10 @@ async function loadTools() {
 function makeToolCard(id, data) {
     const el = document.createElement('div');
     el.className = `list-item${editState.tools === id ? ' is-editing' : ''}`;
+    const iconClass = sanitizeIconClass(data.icon, 'fas fa-tools');
     el.innerHTML = `
-        <div class="item-icon-wrap"><i class="${data.icon || 'fas fa-tools'}"></i></div>
-        <div class="item-info"><h4>${data.name}</h4></div>
+        <div class="item-icon-wrap"><i class="${iconClass}"></i></div>
+        <div class="item-info"><h4>${escapeHtml(data.name || '')}</h4></div>
         <div class="list-item-actions">
             <button class="btn btn-edit btn-sm" data-action="edit" title="Duzenle">
                 <i class="fas fa-pen-to-square"></i>
@@ -1156,11 +1212,12 @@ function makeServiceCard(id, data) {
     const preview = (data.description || '').substring(0, 70) + ((data.description || '').length > 70 ? '…' : '');
     const el = document.createElement('div');
     el.className = `list-item${editState.services === id ? ' is-editing' : ''}`;
+    const iconClass = sanitizeIconClass(data.icon, 'fas fa-briefcase');
     el.innerHTML = `
-        <div class="item-icon-wrap"><i class="${data.icon || 'fas fa-briefcase'}"></i></div>
+        <div class="item-icon-wrap"><i class="${iconClass}"></i></div>
         <div class="item-info">
-            <h4>${data.title}</h4>
-            <p class="item-meta">${preview}</p>
+            <h4>${escapeHtml(data.title || '')}</h4>
+            <p class="item-meta">${escapeHtml(preview)}</p>
         </div>
         <div class="list-item-actions">
             <button class="btn btn-edit btn-sm" data-action="edit" title="Duzenle">

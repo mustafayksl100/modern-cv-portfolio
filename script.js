@@ -91,11 +91,51 @@ function setText(id, val) {
 function setHref(id, href) {
     if (!href) return;
     const el = document.getElementById(id);
-    if (el) el.href = href;
+    if (el) el.href = sanitizeUrl(href, '#', { allowRelative: false });
 }
 
 function sortByOrder(docs) {
     return [...docs].sort((a, b) => (a.data().order || 0) - (b.data().order || 0));
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function sanitizeIconClass(value, fallback) {
+    const raw = String(value || '').trim();
+    return /^[a-z0-9 -]+$/i.test(raw) ? raw : fallback;
+}
+
+function sanitizeUrl(value, fallback = '', options = {}) {
+    const {
+        allowRelative = true,
+        allowMailto = false,
+        allowTel = false,
+        allowHash = false,
+    } = options;
+    const raw = String(value || '').trim();
+
+    if (!raw) return fallback;
+    if (allowHash && raw.startsWith('#')) return raw;
+
+    const hasScheme = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(raw);
+    if (allowRelative && !hasScheme) return raw;
+
+    try {
+        const parsed = new URL(raw, window.location.origin);
+        const allowed = ['http:', 'https:'];
+        if (allowMailto) allowed.push('mailto:');
+        if (allowTel) allowed.push('tel:');
+        return allowed.includes(parsed.protocol) ? parsed.href : fallback;
+    } catch {
+        return fallback;
+    }
 }
 
 /* ── Apply Settings (settings/general doc) ── */
@@ -108,8 +148,8 @@ function applySettings(doc) {
     if (heroTitleEl && d.heroTitle) {
         const parts = d.heroTitle.trim().split(' ');
         const last  = parts.pop();
-        heroTitleEl.innerHTML = (parts.length ? parts.join(' ') + ' ' : '') +
-                                `<span class="gradient-text">${last}</span>`;
+        heroTitleEl.innerHTML = (parts.length ? `${escapeHtml(parts.join(' '))} ` : '') +
+                                `<span class="gradient-text">${escapeHtml(last)}</span>`;
     }
     setText('cms-hero-subtitle', d.heroSubtitle);
     setText('cms-hero-desc',     d.heroDescription);
@@ -136,7 +176,8 @@ function applySettings(doc) {
 
     /* CV links (data-cv-link attribute) */
     if (d.cvUrl) {
-        document.querySelectorAll('[data-cv-link]').forEach(el => { el.href = d.cvUrl; });
+        const cvUrl = sanitizeUrl(d.cvUrl, '', { allowRelative: true });
+        document.querySelectorAll('[data-cv-link]').forEach(el => { el.href = cvUrl; });
     }
 
     /* Page title */
@@ -155,15 +196,12 @@ function renderServices(snap) {
         const d     = doc.data();
         const delay = i > 0 ? ` delay-${Math.min(i, 3)}` : '';
         const card  = document.createElement('div');
+        const iconClass = sanitizeIconClass(d.icon, 'fas fa-code');
         card.className = `service-card glass-card animate-on-scroll${delay}`;
         card.innerHTML = `
-            <div class="service-icon"><i class="${d.icon || 'fas fa-code'}"></i></div>
-            <h3>${d.title || ''}</h3>
-            <p>${d.description || ''}</p>`;
-        card.innerHTML = card.innerHTML.replace(
-            /<div class="status-badge">[\s\S]*?<\/div>/,
-            `<div class="${statusMeta.className}"><i class="fas fa-circle"></i> ${statusMeta.label}</div>`
-        );
+            <div class="service-icon"><i class="${iconClass}"></i></div>
+            <h3>${escapeHtml(d.title || '')}</h3>
+            <p>${escapeHtml(d.description || '')}</p>`;
         grid.appendChild(card);
     });
 }
@@ -178,14 +216,15 @@ function renderEducation(snap) {
         const d     = doc.data();
         const delay = i > 0 ? ` delay-${Math.min(i, 3)}` : '';
         const card  = document.createElement('div');
+        const iconClass = sanitizeIconClass(d.icon, 'fas fa-graduation-cap');
         card.className = `edu-card glass-card animate-on-scroll${delay}`;
         card.innerHTML = `
-            <div class="edu-icon"><i class="${d.icon || 'fas fa-graduation-cap'}"></i></div>
+            <div class="edu-icon"><i class="${iconClass}"></i></div>
             <div class="edu-content">
-                <span class="edu-year">${d.year || ''}</span><br>
-                <h3>${d.degree || ''}</h3>
-                <h4>${d.school || ''}</h4><br>
-                <p>${d.description || ''}</p>
+                <span class="edu-year">${escapeHtml(d.year || '')}</span><br>
+                <h3>${escapeHtml(d.degree || '')}</h3>
+                <h4>${escapeHtml(d.school || '')}</h4><br>
+                <p>${escapeHtml(d.description || '')}</p>
             </div>`;
         grid.appendChild(card);
     });
@@ -200,13 +239,14 @@ function renderSkills(snap) {
     sortByOrder(snap.docs).forEach(doc => {
         const d    = doc.data();
         const item = document.createElement('div');
+        const iconClass = sanitizeIconClass(d.icon, 'fas fa-code');
         item.className  = 'skill-item';
         item.dataset.level = d.level || 0;
         item.innerHTML = `
             <div class="skill-item-header">
-                <i class="${d.icon || 'fas fa-code'}"></i>
-                <span class="skill-item-name">${d.name || ''}</span>
-                <small class="skill-level">${d.levelLabel || ''}</small>
+                <i class="${iconClass}"></i>
+                <span class="skill-item-name">${escapeHtml(d.name || '')}</span>
+                <small class="skill-level">${escapeHtml(d.levelLabel || '')}</small>
             </div>
             <div class="skill-bar"><div class="skill-bar-fill"></div></div>`;
         container.appendChild(item);
@@ -222,8 +262,9 @@ function renderTools(snap) {
     sortByOrder(snap.docs).forEach(doc => {
         const d    = doc.data();
         const chip = document.createElement('span');
+        const iconClass = sanitizeIconClass(d.icon, 'fas fa-tools');
         chip.className = 'skill-chip';
-        chip.innerHTML = `<i class="${d.icon || 'fas fa-tools'}"></i> ${d.name || ''}`;
+        chip.innerHTML = `<i class="${iconClass}"></i> ${escapeHtml(d.name || '')}`;
         container.appendChild(chip);
     });
 }
@@ -251,30 +292,38 @@ function renderProjects(snap) {
     snap.docs.forEach((doc, i) => {
         const d     = doc.data();
         const delay = i > 0 ? ` delay-${Math.min(i, 3)}` : '';
-        const tags  = (d.tags || []).map(t => `<span>${t}</span>`).join('');
+        const tags  = (d.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join('');
         const statusMeta = getProjectStatusMeta(d.status);
+        const imageUrl = sanitizeUrl(d.img, '', { allowRelative: true });
+        const githubUrl = sanitizeUrl(d.github, '#', { allowRelative: false });
+        const webUrl = sanitizeUrl(d.web, '#', { allowRelative: false });
         const card  = document.createElement('article');
         card.className = `project-card glass-card animate-on-scroll${delay}`;
         card.innerHTML = `
             <div class="project-image">
                 <div class="status-badge"><i class="fas fa-circle"></i> Yayında</div>
-                <img src="${d.img || ''}" alt="${d.title || ''}"
+                <img src="${imageUrl}" alt="${escapeHtml(d.title || '')}"
                      class="project-img" loading="lazy" decoding="async"
                      onerror="this.style.opacity='0'">
             </div>
             <div class="project-content">
-                <h3>${d.title || ''}</h3>
-                <p>${d.desc || ''}</p>
+                <h3>${escapeHtml(d.title || '')}</h3>
+                <p>${escapeHtml(d.desc || '')}</p>
                 <div class="project-tags">${tags}</div>
                 <div class="project-links">
-                    <a href="${d.github || '#'}" class="link-btn" target="_blank" rel="noopener">
+                    <a href="${githubUrl}" class="link-btn" target="_blank" rel="noopener">
                         <i class="fab fa-github"></i> Code
                     </a>
-                    <a href="${d.web || '#'}" class="link-btn link-btn-web" target="_blank" rel="noopener">
+                    <a href="${webUrl}" class="link-btn link-btn-web" target="_blank" rel="noopener">
                         <i class="fas fa-external-link-alt"></i> Web
                     </a>
                 </div>
             </div>`;
+        const statusBadge = card.querySelector('.status-badge');
+        if (statusBadge) {
+            statusBadge.className = statusMeta.className;
+            statusBadge.innerHTML = `<i class="fas fa-circle"></i> ${statusMeta.label}`;
+        }
         grid.appendChild(card);
     });
 }

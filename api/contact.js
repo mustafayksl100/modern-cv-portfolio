@@ -1,6 +1,15 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
+const ALLOWED_ORIGINS = new Set([
+  'https://mustafa-yuksel.vercel.app',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
+]);
 
 function escapeHtml(str) {
   return String(str)
@@ -16,6 +25,16 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const origin = req.headers.origin || '';
+  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    return res.status(403).json({ error: 'Forbidden origin' });
+  }
+
+  const contentType = req.headers['content-type'] || '';
+  if (!contentType.includes('application/json')) {
+    return res.status(415).json({ error: 'Unsupported content type' });
   }
 
   const { name, email, message } = req.body || {};
