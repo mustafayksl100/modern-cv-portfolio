@@ -9,39 +9,51 @@
     <meta name="description" content="A modern, clean, and stylish portfolio and CV website.">
     <link rel="stylesheet" href="style.css">
 
-    <!-- Fonts -->
+    <!-- Fonts — async load, no render block -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
+    <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome — async load -->
+    <link rel="preload" as="style"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
 </head>
 
 <body>
-    <!-- Floating Background Animation -->
-    <div class="background-animation" id="background-animation"></div>
+    <canvas id="bg-canvas"></canvas>
 
     <!-- Header -->
     <header id="header" class="header">
         <div class="container header-container">
             <a href="#" class="logo">
-                <img src="img/logo.png" alt="Logo" class="header-logo">
+                <img src="img/logo.png" alt="Logo" class="header-logo" loading="eager" decoding="async">
                 MUSTAFA YÜKSEL<span class="accent">.</span>
             </a>
 
             <nav class="nav-menu">
                 <ul class="nav-list">
-                    <li><a href="#home" class="nav-link">Anasayfa</a></li>
-                    <li><a href="#about" class="nav-link">Hakkımda</a></li>
+                    <li><a href="#home"      class="nav-link">Anasayfa</a></li>
+                    <li><a href="#about"     class="nav-link">Hakkımda</a></li>
+                    <li><a href="#services"  class="nav-link">Hizmetlerim</a></li>
                     <li><a href="#education" class="nav-link">Eğitim</a></li>
-                    <li><a href="#skills" class="nav-link">Becerilerim</a></li>
-                    <li><a href="#projects" class="nav-link">Projelerim</a></li>
-                    <li><a href="#contact" class="nav-link">İletişim</a></li>
-                    <li><a href="mustafa yüksel cv.pdf" target="_blank" class="btn btn-primary nav-cv-btn"><i
-                                class="fas fa-file-pdf"></i> CV Görüntüle</a></li>
+                    <li><a href="#skills"    class="nav-link">Becerilerim</a></li>
+                    <li><a href="#projects"  class="nav-link">Projelerim</a></li>
+                    <li><a href="#contact"   class="nav-link">İletişim</a></li>
+                    <li>
+                        <a href="mustafa yüksel cv.pdf" target="_blank" data-cv-link
+                           class="btn btn-primary nav-cv-btn">
+                            <i class="fas fa-file-pdf"></i> CV Görüntüle
+                        </a>
+                    </li>
                 </ul>
             </nav>
 
@@ -51,6 +63,7 @@
                 <span class="bar"></span>
             </div>
         </div>
+        <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
     </header>
 
     <!-- Mobile Menu Overlay -->
@@ -60,42 +73,69 @@
             <button class="close-menu"><i class="fas fa-times"></i></button>
         </div>
         <ul class="mobile-nav-list">
-            <li><a href="#home" class="mobile-nav-link">Anasayfa</a></li>
-            <li><a href="#about" class="mobile-nav-link">Hakkımda</a></li>
+            <li><a href="#home"      class="mobile-nav-link">Anasayfa</a></li>
+            <li><a href="#about"     class="mobile-nav-link">Hakkımda</a></li>
+            <li><a href="#services"  class="mobile-nav-link">Hizmetlerim</a></li>
             <li><a href="#education" class="mobile-nav-link">Eğitim</a></li>
-            <li><a href="#skills" class="mobile-nav-link">Becerilerim</a></li>
-            <li><a href="#projects" class="mobile-nav-link">Projelerim</a></li>
-            <li><a href="#contact" class="mobile-nav-link">İletişim</a></li>
-            <li><a href="mustafa yüksel cv.pdf" target="_blank" class="btn btn-primary mobile-cv-btn"><i
-                        class="fas fa-file-pdf"></i> CV Görüntüle</a></li>
+            <li><a href="#skills"    class="mobile-nav-link">Becerilerim</a></li>
+            <li><a href="#projects"  class="mobile-nav-link">Projelerim</a></li>
+            <li><a href="#contact"   class="mobile-nav-link">İletişim</a></li>
+            <li>
+                <a href="mustafa yüksel cv.pdf" target="_blank" data-cv-link
+                   class="btn btn-primary mobile-cv-btn">
+                    <i class="fas fa-file-pdf"></i> CV Görüntüle
+                </a>
+            </li>
         </ul>
     </div>
 
-
-
     <main>
-        <!-- Hero Section -->
+        <!-- ── Hero Section ── -->
         <section id="home" class="hero section">
             <div class="container hero-container">
                 <div class="hero-content">
-                    <h1 class="hero-title animate-fade-up delay-1">Mustafa <span class="gradient-text">Yüksel</span>
+                    <h1 class="hero-title animate-fade-up delay-1">
+                        <span id="cms-hero-title">Mustafa <span class="gradient-text">Yüksel</span></span>
                     </h1>
-                    <h2 class="hero-subtitle animate-fade-up delay-2">Web Developer</h2>
-                    <p class="hero-description animate-fade-up delay-3">
+                    <h2 class="hero-subtitle animate-fade-up delay-2">
+                        <span class="typing-text" id="cms-hero-subtitle">Web Developer</span>
+                    </h2>
+                    <p class="hero-description animate-fade-up delay-3" id="cms-hero-desc">
                         Hızlı, erişilebilir ve görsel olarak çarpıcı, olağanüstü dijital deneyimler oluşturuyorum.
                     </p>
                     <div class="hero-buttons animate-fade-up delay-4">
                         <a href="#projects" class="btn btn-primary">Daha fazla</a>
-                        <a href="#contact" class="btn btn-outline">İletişime Geç</a>
+                        <a href="#contact"  class="btn btn-outline">İletişime Geç</a>
+                    </div>
+                    <div class="hero-socials animate-fade-up delay-5">
+                        <a href="https://github.com/mustafayksl100"
+                           id="cms-social-github"
+                           class="hero-social-link" target="_blank" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/mustafa-y%C3%BCksel-48646032a"
+                           id="cms-social-linkedin"
+                           class="hero-social-link" target="_blank" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://www.instagram.com/mustafa_yuksel488"
+                           id="cms-social-instagram"
+                           class="hero-social-link" target="_blank" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     </div>
                 </div>
+
                 <div class="hero-visual animate-fade-left delay-2">
                     <div class="blob-wrapper">
-                        <img src="img/mustafa.png" alt="Mustafa Yüksel" class="hero-image">
+                        <img src="img/mustafa_cv.jpeg" alt="Mustafa Yüksel" class="hero-image"
+                             loading="eager" fetchpriority="high" decoding="async"
+                             width="400" height="400">
                         <div class="blob-blur"></div>
                     </div>
                 </div>
             </div>
+
             <div class="scroll-down animate-fade-up delay-5">
                 <a href="#about" class="scroll-link">
                     <i class="fas fa-arrow-down"></i>
@@ -104,7 +144,7 @@
             </div>
         </section>
 
-        <!-- About Section -->
+        <!-- ── About Section ── -->
         <section id="about" class="about section">
             <div class="container">
                 <div class="section-header center">
@@ -112,46 +152,68 @@
                     <h2 class="section-title">Hakkımda</h2>
                 </div>
                 <div class="about-content">
-                    <div class="about-text glass-card">
-                        <p>
+                    <div class="about-text animate-on-scroll">
+                        <p id="cms-about-1">
                             Şu anda Türkiye'de yaşayan tutkulu bir geliştiriciyim.
                             Uzmanlığım, yalnızca iyi çalışmakla kalmayıp aynı zamanda güzel görünen web uygulamaları
-                            geliştirmek.
-                            Temiz kodun ve minimal tasarımın gücüne inanıyorum.
+                            geliştirmek. Temiz kodun ve minimal tasarımın gücüne inanıyorum.
                         </p>
-                        <p>
-
+                        <p id="cms-about-2">
                             Kod yazmadığım zamanlarda beni yeni teknolojileri keşfederken,
                             açık kaynaklı projelere katkıda bulunurken veya tasarım becerilerimi geliştirirken
-                            bulabilirsiniz.
-                            Her zaman yeni fırsatlara ve ilgi çekici projelere açığım.
+                            bulabilirsiniz. Her zaman yeni fırsatlara ve ilgi çekici projelere açığım.
                         </p>
-                        <div class="about-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">2+</span>
-                                <span class="stat-label">Yıl Deneyim</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">10+</span>
-                                <span class="stat-label">Proje</span>
-                            </div>
-
+                    </div>
+                    <div class="about-stats animate-on-scroll delay-1">
+                        <div class="stat-item">
+                            <span class="stat-number" id="cms-stat-years">2+</span>
+                            <span class="stat-label">Yıl Deneyim</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="cms-stat-projects">10+</span>
+                            <span class="stat-label">Proje</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- ── Services Section ── -->
+        <section id="services" class="services section">
+            <div class="container">
+                <div class="section-header center">
+                    <span class="section-subtitle">Neler Yapıyorum</span>
+                    <h2 class="section-title">Hizmetlerim</h2>
+                </div>
+                <!-- id="cms-services-grid" — Firebase veri varsa bu içeriğin üzerine yazar -->
+                <div class="services-grid" id="cms-services-grid">
+                    <div class="service-card glass-card animate-on-scroll">
+                        <div class="service-icon"><i class="fas fa-code"></i></div>
+                        <h3>Web Geliştirme</h3>
+                        <p>Performanslı, hızlı ve SEO dostu modern web uygulamaları geliştiriyorum. Temiz kod ile uzun ömürlü çözümler üretiyorum.</p>
+                    </div>
+                    <div class="service-card glass-card animate-on-scroll delay-1">
+                        <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
+                        <h3>UI/UX Tasarım</h3>
+                        <p>Kullanıcı odaklı, estetik ve işlevsel arayüzler tasarlıyor, ziyaretçilerinize akılda kalıcı bir deneyim sunuyorum.</p>
+                    </div>
+                    <div class="service-card glass-card animate-on-scroll delay-2">
+                        <div class="service-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <h3>Responsive Tasarım</h3>
+                        <p>Tüm cihazlarda (mobil, tablet, masaüstü) kusursuz çalışan esnek düzenler oluşturuyorum.</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- Education Section -->
+        <!-- ── Education Section ── -->
         <section id="education" class="education section">
             <div class="container">
                 <div class="section-header center">
                     <h2 class="section-title">Eğitim</h2>
                 </div>
-                <div class="education-grid">
-                    <!-- University -->
+                <!-- id="cms-education-grid" — Firebase veri varsa bu içeriğin üzerine yazar -->
+                <div class="education-grid" id="cms-education-grid">
                     <div class="edu-card glass-card animate-on-scroll">
                         <div class="edu-icon">
                             <i class="fas fa-graduation-cap"></i>
@@ -160,29 +222,24 @@
                             <span class="edu-year">2024 - 2026 ( Devam Ediyor )</span><br>
                             <h3>Web Tasarım ve Kodlama</h3>
                             <h4>Bandırma 17 Eylül Üniversitesi</h4><br>
-                            <p>
-                                Web Geliştirme üzerine çalışmalarına devam ediyor, Veri Yapıları ve Algoritmalar
-                                hakkında eğititm alıyor.
-                            </p>
+                            <p>Web Geliştirme üzerine çalışmalarına devam ediyor, Veri Yapıları ve Algoritmalar hakkında eğitim alıyor.</p>
                         </div>
                     </div>
-
-                    <!-- High School -->
                     <div class="edu-card glass-card animate-on-scroll delay-1">
                         <div class="edu-icon">
                             <i class="fas fa-school"></i>
                         </div>
                         <div class="edu-content">
                             <span class="edu-year">2020 - 2024</span>
-                            <h3>İvrindi Anadolu Lisesi</h3> <br>
-                            <p>Sayısal bölüm üzerine okudu ve eğitimler aldım</p>
+                            <h3>İvrindi Anadolu Lisesi</h3><br>
+                            <p>Sayısal bölüm üzerine okudu ve eğitimler aldım.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Skills Section -->
+        <!-- ── Skills Section ── -->
         <section id="skills" class="skills section">
             <div class="container">
                 <div class="section-header center">
@@ -190,115 +247,159 @@
                 </div>
 
                 <div class="skills-grid">
-                    <!-- Skills (Yetenekler) -->
+                    <!-- Skills card — id="cms-skills-items" doldurulur -->
                     <div class="skill-category glass-card animate-on-scroll">
                         <h3><i class="fas fa-code"></i> Yetenekler</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag"><i class="fab fa-wordpress"></i> WordPress <small
-                                    class="level">İyi</small></span>
-                            <span class="skill-tag"><i class="fab fa-html5"></i> HTML5 <small
-                                    class="level">İyi</small></span>
-                            <span class="skill-tag"><i class="fab fa-css3-alt"></i> CSS <small
-                                    class="level">İyi</small></span>
-                            <span class="skill-tag"><i class="fab fa-js"></i> JavaScript <small
-                                    class="level">Temel</small></span>
-                            <span class="skill-tag"><i class="fab fa-php"></i> PHP <small
-                                    class="level">Orta</small></span>
-                            <span class="skill-tag"><i class="fab fa-python"></i> Python <small
-                                    class="level">Orta</small></span>
-                            <span class="skill-tag"><i class="fas fa-database"></i> SQL <small
-                                    class="level">Orta</small></span>
-                            <span class="skill-tag"><i class="fab fa-node-js"></i> Node.js <small
-                                    class="level">Temel</small></span>
+                        <!-- id="cms-skills-items" — Firebase veri varsa bu içeriğin üzerine yazar -->
+                        <div class="skill-items" id="cms-skills-items">
+                            <div class="skill-item" data-level="80">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-wordpress"></i>
+                                    <span class="skill-item-name">WordPress</span>
+                                    <small class="skill-level">İyi</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="85">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-html5"></i>
+                                    <span class="skill-item-name">HTML5</span>
+                                    <small class="skill-level">İyi</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="82">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-css3-alt"></i>
+                                    <span class="skill-item-name">CSS</span>
+                                    <small class="skill-level">İyi</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="50">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-js"></i>
+                                    <span class="skill-item-name">JavaScript</span>
+                                    <small class="skill-level">Temel</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="62">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-php"></i>
+                                    <span class="skill-item-name">PHP</span>
+                                    <small class="skill-level">Orta</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="60">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-python"></i>
+                                    <span class="skill-item-name">Python</span>
+                                    <small class="skill-level">Orta</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="65">
+                                <div class="skill-item-header">
+                                    <i class="fas fa-database"></i>
+                                    <span class="skill-item-name">SQL</span>
+                                    <small class="skill-level">Orta</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
+                            <div class="skill-item" data-level="42">
+                                <div class="skill-item-header">
+                                    <i class="fab fa-node-js"></i>
+                                    <span class="skill-item-name">Node.js</span>
+                                    <small class="skill-level">Temel</small>
+                                </div>
+                                <div class="skill-bar"><div class="skill-bar-fill"></div></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Tools (Kullandığım Araçlar) -->
+                    <!-- Tools card — id="cms-tools-chips" doldurulur -->
                     <div class="skill-category glass-card animate-on-scroll delay-1">
                         <h3><i class="fas fa-tools"></i> Kullandığım Araçlar</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag"><i class="fab fa-figma"></i> Figma</span>
-                            <span class="skill-tag"><i class="fas fa-laptop-code"></i> Visual Studio</span>
-                            <span class="skill-tag"><i class="fas fa-code"></i> VS Code</span>
-                            <span class="skill-tag"><i class="fab fa-github"></i> Github</span>
-                            <span class="skill-tag"><i class="fas fa-image"></i> Photoshop</span>
+                        <!-- id="cms-tools-chips" — Firebase veri varsa bu içeriğin üzerine yazar -->
+                        <div class="skill-chips" id="cms-tools-chips">
+                            <span class="skill-chip"><i class="fab fa-figma"></i> Figma</span>
+                            <span class="skill-chip"><i class="fas fa-laptop-code"></i> Visual Studio</span>
+                            <span class="skill-chip"><i class="fas fa-code"></i> VS Code</span>
+                            <span class="skill-chip"><i class="fab fa-github"></i> Github</span>
+                            <span class="skill-chip"><i class="fas fa-image"></i> Photoshop</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Projects Section -->
+        <!-- ── Projects Section ── -->
         <section id="projects" class="projects section">
             <div class="container">
                 <div class="section-header center">
                     <h2 class="section-title">Projelerim</h2>
                 </div>
+                <!-- id="cms-projects-grid" — Firebase veri varsa bu içeriğin üzerine yazar -->
+                <div class="projects-grid" id="cms-projects-grid">
 
-                <div class="projects-grid">
-                    <!-- Project 1: Hava Durumu -->
                     <article class="project-card glass-card animate-on-scroll">
                         <div class="project-image">
-                            <img src="img/havadurumu.png" alt="Hava Durumu Sitesi" class="project-img">
+                            <div class="status-badge"><i class="fas fa-circle"></i> Yayında</div>
+                            <img src="img/havadurumu.png" alt="Hava Durumu Sitesi" class="project-img" loading="lazy" decoding="async">
                         </div>
                         <div class="project-content">
                             <h3>Hava Durumu Sitesi</h3>
-                            <p>Anlık olarak veri çeken türkiyenin 81 ilini kapsayan ve bazı dış devletlerin de hava
-                                durumunu gösteren bir web sitesi.</p>
+                            <p>Anlık olarak veri çeken türkiyenin 81 ilini kapsayan ve bazı dış devletlerin de hava durumunu gösteren bir web sitesi.</p>
                             <div class="project-tags">
                                 <span>Html</span>
                                 <span>Css</span>
                                 <span>JavaScript</span>
                             </div>
                             <div class="project-links">
-                                <a href="https://github.com/mustafayksl100/weather-app" class="link-btn"
-                                    target="_blank">
+                                <a href="https://github.com/mustafayksl100/weather-app" class="link-btn" target="_blank">
                                     <i class="fab fa-github"></i> Code
                                 </a>
-                                <a href="https://weather-app-three-chi-22.vercel.app/" class="link-btn link-btn-web"
-                                    target="_blank">
+                                <a href="https://weather-app-three-chi-22.vercel.app/" class="link-btn link-btn-web" target="_blank">
                                     <i class="fas fa-external-link-alt"></i> Web
                                 </a>
                             </div>
                         </div>
                     </article>
 
-                    <!-- Project 2: CarbonTracker -->
                     <article class="project-card glass-card animate-on-scroll delay-1">
                         <div class="project-image">
-                            <img src="img/carbontracker.png" alt="CarbonTracker" class="project-img">
+                            <div class="status-badge"><i class="fas fa-circle"></i> Yayında</div>
+                            <img src="img/carbontracker.png" alt="CarbonTracker" class="project-img" loading="lazy" decoding="async">
                         </div>
                         <div class="project-content">
                             <h3>CarbonTracker</h3>
-                            <p>Karbon ayak izinizi takip etmenizi sağlayan, çevre dostu alışkanlıklar edinmenize
-                                yardımcı olan modern bir web uygulaması.</p>
+                            <p>Karbon ayak izinizi takip etmenizi sağlayan, çevre dostu alışkanlıklar edinmenize yardımcı olan modern bir web uygulaması.</p>
                             <div class="project-tags">
                                 <span>React</span>
                                 <span>Vite</span>
                                 <span>JavaScript</span>
                             </div>
                             <div class="project-links">
-                                <a href="https://github.com/mustafayksl100/carbontracker" class="link-btn"
-                                    target="_blank">
+                                <a href="https://github.com/mustafayksl100/carbontracker" class="link-btn" target="_blank">
                                     <i class="fab fa-github"></i> Code
                                 </a>
-                                <a href="https://eko-ayak-izi.vercel.app/" class="link-btn link-btn-web"
-                                    target="_blank">
+                                <a href="https://eko-ayak-izi.vercel.app/" class="link-btn link-btn-web" target="_blank">
                                     <i class="fas fa-external-link-alt"></i> Web
                                 </a>
                             </div>
                         </div>
                     </article>
 
-                    <!-- Project 3: WebBuilder -->
                     <article class="project-card glass-card animate-on-scroll delay-2">
                         <div class="project-image">
-                            <img src="img/webbilder.png" alt="WebBuilder" class="project-img">
+                            <div class="status-badge"><i class="fas fa-circle"></i> Yayında</div>
+                            <img src="img/webbilder.png" alt="WebBuilder" class="project-img" loading="lazy" decoding="async">
                         </div>
                         <div class="project-content">
                             <h3>WebBuilder</h3>
-                            <p>Sürükle-bırak özelliği ile kod yazmadan profesyonel web siteleri oluşturmanızı sağlayan
-                                güçlü bir web site inşa aracı.</p>
+                            <p>Sürükle-bırak özelliği ile kod yazmadan profesyonel web siteleri oluşturmanızı sağlayan güçlü bir web site inşa aracı.</p>
                             <div class="project-tags">
                                 <span>React</span>
                                 <span>Node.js</span>
@@ -308,8 +409,7 @@
                                 <a href="https://github.com/mustafayksl100/webbuilder" class="link-btn" target="_blank">
                                     <i class="fab fa-github"></i> Code
                                 </a>
-                                <a href="https://webbuilderplus.vercel.app/" class="link-btn link-btn-web"
-                                    target="_blank">
+                                <a href="https://webbuilderplus.vercel.app/" class="link-btn link-btn-web" target="_blank">
                                     <i class="fas fa-external-link-alt"></i> Web
                                 </a>
                             </div>
@@ -320,28 +420,30 @@
             </div>
         </section>
 
-        <!-- Looking for Work Section -->
+        <!-- ── Looking for Work Section ── -->
         <section class="hiring-section section">
             <div class="container">
-                <div class="hiring-card glass-card animate-on-scroll">
+                <div class="hiring-card animate-on-scroll">
                     <div class="hiring-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <div class="hiring-content">
-                        <span class="hiring-badge">Açık Pozisyonlara Başvuruya Hazır</span>
-                        <h2>Yeni Fırsatlar Arıyorum</h2>
-                        <p>Tutkulu, öğrenmeye açık ve sonuç odaklı bir geliştirici olarak ekibinize değer katmaya
-                            hazırım.
-                            Modern web teknolojileri konusundaki yetkinliğim ve problem çözme becerilerimle
-                            projelerinizi bir üst seviyeye taşıyabilirim.</p>
-                        <a href="#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> İletişime
-                            Geçin</a>
+                        <span class="hiring-badge" id="cms-hiring-badge">Açık Pozisyonlara Başvuruya Hazır</span>
+                        <h2 id="cms-hiring-title">Yeni Fırsatlar Arıyorum</h2>
+                        <p id="cms-hiring-desc">
+                            Tutkulu, öğrenmeye açık ve sonuç odaklı bir geliştirici olarak ekibinize değer katmaya
+                            hazırım. Modern web teknolojileri konusundaki yetkinliğim ve problem çözme becerilerimle
+                            projelerinizi bir üst seviyeye taşıyabilirim.
+                        </p>
+                        <a href="#contact" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> İletişime Geçin
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
+        <!-- ── Contact Section ── -->
         <section id="contact" class="contact section">
             <div class="container">
                 <div class="contact-wrapper glass-card animate-on-scroll">
@@ -353,21 +455,24 @@
                         <div class="contact-details">
                             <div class="contact-item">
                                 <i class="fas fa-envelope"></i>
-                                <span>mustafayksl100@gmail.com</span>
+                                <span id="cms-contact-email">yukselmustafa544@gmail.com</span>
                             </div>
                             <div class="contact-item">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>Balıkesir/Bandırma</span>
+                                <span id="cms-contact-location">Balıkesir/Bandırma</span>
                             </div>
                         </div>
 
                         <div class="social-links">
-                            <a href="https://github.com/mustafayksl100" class="social-icon"><i
-                                    class="fab fa-github"></i></a>
-                            <a href="https://www.linkedin.com/in/mustafa-y%C3%BCksel-48646032a" class="social-icon"><i
-                                    class="fab fa-linkedin-in"></i></a>
-                            <a href="https://www.instagram.com/mustafa_yuksel488" class="social-icon"><i
-                                    class="fab fa-instagram"></i></a>
+                            <a href="https://github.com/mustafayksl100"
+                               id="cms-contact-github"
+                               class="social-icon"><i class="fab fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/mustafa-y%C3%BCksel-48646032a"
+                               id="cms-contact-linkedin"
+                               class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="https://www.instagram.com/mustafa_yuksel488"
+                               id="cms-contact-instagram"
+                               class="social-icon"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
 
@@ -384,8 +489,9 @@
                             <textarea id="message" required placeholder=" " rows="4"></textarea>
                             <label for="message">Mesajın</label>
                         </div>
-                        <button type="submit" class="btn btn-primary submit-btn">Mesajı Gönder <i
-                                class="fas fa-paper-plane"></i></button>
+                        <button type="submit" class="btn btn-primary submit-btn">
+                            Mesajı Gönder <i class="fas fa-paper-plane"></i>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -394,13 +500,18 @@
 
     <footer class="footer">
         <div class="container footer-container">
-            <a href="mustafa yüksel cv.pdf" target="_blank" class="btn btn-primary footer-cv-btn"><i
-                    class="fas fa-file-pdf"></i> CV Görüntüle</a>
+            <a href="mustafa yüksel cv.pdf" target="_blank" data-cv-link
+               class="btn btn-primary footer-cv-btn">
+                <i class="fas fa-file-pdf"></i> CV Görüntüle
+            </a>
             <p>&copy; 2025 Mustafa Yüksel. Tüm Hakları saklıdır.</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Firebase SDK (Compat — CORS-safe, deferred in order) -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 
 </html>

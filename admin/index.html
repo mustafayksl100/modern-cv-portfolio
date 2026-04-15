@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio CMS · Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════ -->
+<div id="login-screen" class="screen active">
+    <div class="login-wrapper">
+        <div class="login-brand">MUSTAFA<span class="accent">.</span></div>
+        <div class="login-card glass-card">
+            <div class="login-icon-wrap"><i class="fas fa-shield-alt"></i></div>
+            <h2>Yönetici Paneli</h2>
+            <p>Devam etmek için şifrenizi girin.</p>
+            <form id="login-form">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <input type="email" id="admin-email" placeholder="Admin E-posta" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="admin-pass" placeholder="Yönetici Şifresi" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="login-submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                </button>
+                <p id="login-error" class="error-inline"></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     DASHBOARD SCREEN
+══════════════════════════════════════════════ -->
+<div id="dashboard-screen" class="screen">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-text">MUSTAFA<span class="accent">.</span></span>
+            <span class="badge">CMS</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-tab="settings">
+                <i class="fas fa-sliders-h"></i>
+                <span>Genel Ayarlar</span>
+            </button>
+            <button class="nav-item" data-tab="projects">
+                <i class="fas fa-th-large"></i>
+                <span>Projeler</span>
+            </button>
+            <button class="nav-item" data-tab="education">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Eğitim</span>
+            </button>
+            <button class="nav-item" data-tab="skills">
+                <i class="fas fa-code"></i>
+                <span>Yetenekler</span>
+            </button>
+            <button class="nav-item" data-tab="services">
+                <i class="fas fa-briefcase"></i>
+                <span>Hizmetler</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="https://mustafa-yuksel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline w-100" style="margin-bottom: 0.5rem;">
+                <i class="fas fa-external-link-alt"></i> Siteyi Aç
+            </a>
+            <button id="logout-btn" class="btn btn-primary w-100" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
+                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="cms-main">
+
+        <!-- Top header bar -->
+        <header class="cms-header">
+            <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menüyü Aç">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" id="page-title">Genel Ayarlar</h1>
+        </header>
+
+        <div class="cms-content">
+
+            <!-- ══════════════════════════════
+                 TAB 1 · GENEL AYARLAR
+            ══════════════════════════════ -->
+            <div class="tab-content active" id="tab-settings">
+
+                <div class="tab-intro glass-card">
+                    <i class="fas fa-info-circle"></i>
+                    Sitenizin tüm metin içeriklerini, sosyal medya linklerini ve genel bilgilerini buradan yönetebilirsiniz. Alt bölümleri doldurup <strong>Tüm Ayarları Kaydet</strong> düğmesine basın.
+                </div>
+
+                <form id="settings-form">
+
+                    <!-- Hero -->
+                    <div class="section-card glass-card">
+                        <div class="section-card-header">
+                            <i class="fas fa-star"></i>
+                            <h3>Hero (Açılış) Alanı</h3>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Ad Soyad</label>
+                                <input type="text" id="s-heroTitle" placeholder="Mustafa Yüksel">
+                            </div>
+                            <div class="form-group">
+                                <label>Unvan / Meslek</label>
+                                <input type="text" id="s-heroSubtitle" placeholder="Web Developer">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Kısa Açıklama</label>
+                            <textarea id="s-heroDesc" rows="2" placeholder="Hızlı, erişilebilir ve görsel olarak çarpıcı dijital deneyimler..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Hakkımda -->
+                    <div class="section-card glass-card">
+                        <div class="section-card-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h3>Hakkımda Bölümü</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>1. Paragraf</label>
+                            <textarea id="s-about1" rows="3" placeholder="Türkiye'de yaşayan tutkulu bir geliştirici..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>2. Paragraf</label>
+                            <textarea id="s-about2" rows="3" placeholder="Kod yazmadığım zamanlarda..."></textarea>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Yıl Deneyim Değeri</label>
+                                <input type="text" id="s-statsYears" placeholder="2+">
+                            </div>
+                            <div class="form-group">
+                                <label>Proje Sayısı Değeri</label>
+                                <input type="text" id="s-statsProjects" placeholder="10+">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- İş Arıyorum -->
+                    <div class="section-card glass-card">
+                        <div class="section-card-header">
+                            <i class="fas fa-handshake"></i>
+                            <h3>"İş Arıyorum" Bölümü</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>Rozet Metni</label>
+                            <input type="text" id="s-hiringBadge" placeholder="Açık Pozisyonlara Başvuruya Hazır">
+                        </div>
+                        <div class="form-group">
+                            <label>Başlık</label>
+                            <input type="text" id="s-hiringTitle" placeholder="Yeni Fırsatlar Arıyorum">
+                        </div>
+                        <div class="form-group">
+                            <label>Açıklama Metni</label>
+                            <textarea id="s-hiringDesc" rows="3" placeholder="Tutkulu, öğrenmeye açık ve sonuç odaklı..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- İletişim -->
+                    <div class="section-card glass-card">
+                        <div class="section-card-header">
+                            <i class="fas fa-envelope"></i>
+                            <h3>İletişim Bilgileri</h3>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>E-posta Adresi</label>
+                                <input type="email" id="s-email" placeholder="ornek@mail.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Konum</label>
+                                <input type="text" id="s-location" placeholder="Balıkesir/Bandırma">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>CV Dosya Adı veya URL</label>
+                            <input type="text" id="s-cvUrl" placeholder="mustafa yüksel cv.pdf">
+                        </div>
+                    </div>
+
+                    <!-- Sosyal Medya -->
+                    <div class="section-card glass-card">
+                        <div class="section-card-header">
+                            <i class="fas fa-share-nodes"></i>
+                            <h3>Sosyal Medya Linkleri</h3>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-github"></i> GitHub URL</label>
+                            <input type="url" id="s-github" placeholder="https://github.com/kullanici">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-linkedin"></i> LinkedIn URL</label>
+                            <input type="url" id="s-linkedin" placeholder="https://linkedin.com/in/kullanici">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-instagram"></i> Instagram URL</label>
+                            <input type="url" id="s-instagram" placeholder="https://instagram.com/kullanici">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg" id="settings-save-btn">
+                            <i class="fas fa-save"></i> Tüm Ayarları Kaydet
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- ══════════════════════════════
+                 TAB 2 · PROJELER
+            ══════════════════════════════ -->
+            <div class="tab-content" id="tab-projects">
+                <div class="two-col">
+
+                    <section class="form-panel glass-card">
+                        <h3 class="panel-title" id="project-form-title"><i class="fas fa-plus-circle"></i> Yeni Proje Ekle</h3>
+                        <p class="form-mode-note" id="project-form-note">Yeni kayit ekleyin veya listeden duzenle secin.</p>
+                        <form id="add-project-form">
+                            <div class="form-group">
+                                <label>Proje Adı</label>
+                                <input type="text" id="p-title" required placeholder="Örn: CarbonTracker">
+                            </div>
+                            <div class="form-group">
+                                <label>Kısa Açıklama</label>
+                                <textarea id="p-desc" required rows="3" placeholder="Projeyi özetleyin..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Proje Görseli</label>
+                                <!-- Upload drop zone -->
+                                <div class="upload-zone" id="p-img-zone">
+                                    <input type="file" id="p-img-file" accept="image/*" class="upload-file-input">
+                                    <div class="upload-zone-body" id="p-img-zone-body">
+                                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                        <span class="upload-label">Tıkla veya sürükle bırak</span>
+                                        <span class="upload-hint">PNG, JPG, WEBP — maks. 5 MB</span>
+                                    </div>
+                                    <div class="upload-progress" id="p-img-progress" style="display:none">
+                                        <div class="upload-progress-bar">
+                                            <div class="upload-progress-fill" id="p-img-bar"></div>
+                                        </div>
+                                        <span class="upload-progress-label" id="p-img-pct">0%</span>
+                                    </div>
+                                    <img class="upload-preview" id="p-img-preview" src="" alt="Önizleme" style="display:none">
+                                    <button type="button" class="upload-clear-btn" id="p-img-clear" style="display:none" title="Görseli Kaldır">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <!-- URL fallback -->
+                                <div class="upload-or"><span>ya da URL gir</span></div>
+                                <input type="url" id="p-img" placeholder="https://..." class="upload-url-input" autocomplete="off">
+                                <small class="hint">Yüklenmiş görsel URL'yi otomatik doldurur.</small>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>GitHub Kodu</label>
+                                    <input type="url" id="p-code" required placeholder="https://github.com/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Canlı Site</label>
+                                    <input type="url" id="p-web" required placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Etiketler <small class="muted">(virgülle ayırın)</small></label>
+                                <input type="text" id="p-tags" required placeholder="React, Vite, Node.js">
+                            </div>
+                            <div class="form-submit-row">
+                                <button type="submit" class="btn btn-primary w-100" id="submit-project-btn">
+                                    <i class="fas fa-cloud-upload-alt"></i> Projeyi Yayına Al
+                                </button>
+                                <button type="button" class="btn btn-outline btn-cancel-edit is-hidden" id="cancel-project-edit-btn">
+                                    <i class="fas fa-times"></i> Iptal
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="list-panel">
+                        <div class="list-panel-header">
+                            <h3 class="panel-title"><i class="fas fa-server"></i> Yayındaki Projeler</h3>
+                            <button class="btn btn-seed" onclick="seedDefaultData('projects')" title="Firebase boşsa mevcut 3 projeyi ekle">
+                                <i class="fas fa-seedling"></i> Varsayılanları Yükle
+                            </button>
+                        </div>
+                        <div id="project-list" class="item-list">
+                            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════
+                 TAB 3 · EĞİTİM
+            ══════════════════════════════ -->
+            <div class="tab-content" id="tab-education">
+                <div class="two-col">
+
+                    <section class="form-panel glass-card">
+                        <h3 class="panel-title" id="education-form-title"><i class="fas fa-plus-circle"></i> Yeni Eğitim Ekle</h3>
+                        <p class="form-mode-note" id="education-form-note">Yeni kayit ekleyin veya listeden duzenle secin.</p>
+                        <form id="add-education-form">
+                            <div class="form-group">
+                                <label>İkon <small class="muted">(Font Awesome sınıfı)</small></label>
+                                <input type="text" id="e-icon" placeholder="fas fa-graduation-cap" value="fas fa-graduation-cap">
+                                <small class="hint"><a href="https://fontawesome.com/icons" target="_blank">fontawesome.com/icons</a> adresinden bulabilirsiniz.</small>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Yıl Aralığı</label>
+                                    <input type="text" id="e-year" required placeholder="2024 - 2026">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sıralama</label>
+                                    <input type="number" id="e-order" value="1" min="1">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Bölüm / Program</label>
+                                <input type="text" id="e-degree" required placeholder="Web Tasarım ve Kodlama">
+                            </div>
+                            <div class="form-group">
+                                <label>Okul / Kurum</label>
+                                <input type="text" id="e-school" required placeholder="Bandırma 17 Eylül Üniversitesi">
+                            </div>
+                            <div class="form-group">
+                                <label>Açıklama</label>
+                                <textarea id="e-desc" rows="3" placeholder="Bu kurumda ne öğrendiniz?"></textarea>
+                            </div>
+                            <div class="form-submit-row">
+                                <button type="submit" class="btn btn-primary w-100" id="submit-edu-btn">
+                                    <i class="fas fa-plus"></i> Eğitimi Ekle
+                                </button>
+                                <button type="button" class="btn btn-outline btn-cancel-edit is-hidden" id="cancel-education-edit-btn">
+                                    <i class="fas fa-times"></i> Iptal
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="list-panel">
+                        <div class="list-panel-header">
+                            <h3 class="panel-title"><i class="fas fa-list"></i> Eğitim Listesi</h3>
+                            <button class="btn btn-seed" onclick="seedDefaultData('education')" title="Firebase boşsa mevcut 2 eğitimi ekle">
+                                <i class="fas fa-seedling"></i> Varsayılanları Yükle
+                            </button>
+                        </div>
+                        <div id="education-list" class="item-list">
+                            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════
+                 TAB 4 · YETENEKler
+            ══════════════════════════════ -->
+            <div class="tab-content" id="tab-skills">
+
+                <!-- Sub-tab navigation -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="skill-items">
+                        <i class="fas fa-code"></i> Yetenekler
+                    </button>
+                    <button class="sub-tab" data-subtab="skill-tools">
+                        <i class="fas fa-tools"></i> Araçlar
+                    </button>
+                </div>
+
+                <!-- Sub-tab: Yetenekler -->
+                <div class="sub-content active" id="sub-skill-items">
+                    <div class="two-col">
+                        <section class="form-panel glass-card">
+                            <h3 class="panel-title" id="skill-form-title"><i class="fas fa-plus-circle"></i> Yeni Yetenek Ekle</h3>
+                            <p class="form-mode-note" id="skill-form-note">Yeni kayit ekleyin veya listeden duzenle secin.</p>
+                            <form id="add-skill-form">
+                                <div class="form-group">
+                                    <label>İkon <small class="muted">(FA sınıfı)</small></label>
+                                    <input type="text" id="sk-icon" placeholder="fab fa-html5">
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Yetenek Adı</label>
+                                        <input type="text" id="sk-name" required placeholder="HTML5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Seviye Etiketi</label>
+                                        <select id="sk-levelLabel">
+                                            <option>Temel</option>
+                                            <option>Orta</option>
+                                            <option selected>İyi</option>
+                                            <option>İleri</option>
+                                            <option>Uzman</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Seviye: <span id="sk-level-display">80</span>%</label>
+                                    <input type="range" id="sk-level" class="range-input" min="0" max="100" value="80">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sıralama</label>
+                                    <input type="number" id="sk-order" value="1" min="1">
+                                </div>
+                                <div class="form-submit-row">
+                                    <button type="submit" class="btn btn-primary w-100" id="submit-skill-btn">
+                                        <i class="fas fa-plus"></i> Yetenek Ekle
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-cancel-edit is-hidden" id="cancel-skill-edit-btn">
+                                        <i class="fas fa-times"></i> Iptal
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+
+                        <section class="list-panel">
+                            <div class="list-panel-header">
+                                <h3 class="panel-title"><i class="fas fa-list"></i> Yetenek Listesi</h3>
+                                <button class="btn btn-seed" onclick="seedDefaultData('skills')" title="Firebase boşsa mevcut 8 yeteneği ekle">
+                                    <i class="fas fa-seedling"></i> Varsayılanları Yükle
+                                </button>
+                            </div>
+                            <div id="skills-list" class="item-list">
+                                <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Sub-tab: Araçlar -->
+                <div class="sub-content" id="sub-skill-tools">
+                    <div class="two-col">
+                        <section class="form-panel glass-card">
+                            <h3 class="panel-title" id="tool-form-title"><i class="fas fa-plus-circle"></i> Yeni Araç Ekle</h3>
+                            <p class="form-mode-note" id="tool-form-note">Yeni kayit ekleyin veya listeden duzenle secin.</p>
+                            <form id="add-tool-form">
+                                <div class="form-group">
+                                    <label>İkon <small class="muted">(FA sınıfı)</small></label>
+                                    <input type="text" id="t-icon" placeholder="fab fa-figma">
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Araç Adı</label>
+                                        <input type="text" id="t-name" required placeholder="Figma">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sıralama</label>
+                                        <input type="number" id="t-order" value="1" min="1">
+                                    </div>
+                                </div>
+                                <div class="form-submit-row">
+                                    <button type="submit" class="btn btn-primary w-100" id="submit-tool-btn">
+                                        <i class="fas fa-plus"></i> Araç Ekle
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-cancel-edit is-hidden" id="cancel-tool-edit-btn">
+                                        <i class="fas fa-times"></i> Iptal
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+
+                        <section class="list-panel">
+                            <div class="list-panel-header">
+                                <h3 class="panel-title"><i class="fas fa-list"></i> Araç Listesi</h3>
+                                <button class="btn btn-seed" onclick="seedDefaultData('tools')" title="Firebase boşsa mevcut 5 aracı ekle">
+                                    <i class="fas fa-seedling"></i> Varsayılanları Yükle
+                                </button>
+                            </div>
+                            <div id="tools-list" class="item-list">
+                                <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ══════════════════════════════
+                 TAB 5 · HİZMETLER
+            ══════════════════════════════ -->
+            <div class="tab-content" id="tab-services">
+                <div class="two-col">
+
+                    <section class="form-panel glass-card">
+                        <h3 class="panel-title" id="service-form-title"><i class="fas fa-plus-circle"></i> Yeni Hizmet Ekle</h3>
+                        <p class="form-mode-note" id="service-form-note">Yeni kayit ekleyin veya listeden duzenle secin.</p>
+                        <form id="add-service-form">
+                            <div class="form-group">
+                                <label>İkon <small class="muted">(FA sınıfı)</small></label>
+                                <input type="text" id="sv-icon" value="fas fa-code" placeholder="fas fa-code">
+                            </div>
+                            <div class="form-group">
+                                <label>Hizmet Başlığı</label>
+                                <input type="text" id="sv-title" required placeholder="Web Geliştirme">
+                            </div>
+                            <div class="form-group">
+                                <label>Açıklama</label>
+                                <textarea id="sv-desc" rows="4" required placeholder="Bu hizmetle neler yapıyorsunuz?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Sıralama</label>
+                                <input type="number" id="sv-order" value="1" min="1">
+                            </div>
+                            <div class="form-submit-row">
+                                <button type="submit" class="btn btn-primary w-100" id="submit-service-btn">
+                                    <i class="fas fa-plus"></i> Hizmet Ekle
+                                </button>
+                                <button type="button" class="btn btn-outline btn-cancel-edit is-hidden" id="cancel-service-edit-btn">
+                                    <i class="fas fa-times"></i> Iptal
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="list-panel">
+                        <div class="list-panel-header">
+                            <h3 class="panel-title"><i class="fas fa-list"></i> Hizmet Listesi</h3>
+                            <button class="btn btn-seed" onclick="seedDefaultData('services')" title="Firebase boşsa mevcut 3 hizmeti ekle">
+                                <i class="fas fa-seedling"></i> Varsayılanları Yükle
+                            </button>
+                        </div>
+                        <div id="services-list" class="item-list">
+                            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+        </div><!-- /cms-content -->
+    </main>
+</div><!-- /dashboard-screen -->
+
+<!-- ── TOAST NOTIFICATION ── -->
+<div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+<!-- Firebase SDK (Compat — CORS-safe for local dev) -->
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
