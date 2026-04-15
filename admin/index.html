@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio CMS · Admin</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/admin/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -286,6 +286,13 @@
                                 <label>Etiketler <small class="muted">(virgülle ayırın)</small></label>
                                 <input type="text" id="p-tags" required placeholder="React, Vite, Node.js">
                             </div>
+                            <div class="form-group">
+                                <label>Proje durumu</label>
+                                <select id="p-status">
+                                    <option value="live" selected>Yayında</option>
+                                    <option value="coming-soon">Yakında hizmetinizde</option>
+                                </select>
+                            </div>
                             <div class="form-submit-row">
                                 <button type="submit" class="btn btn-primary w-100" id="submit-project-btn">
                                     <i class="fas fa-cloud-upload-alt"></i> Projeyi Yayına Al
@@ -562,6 +569,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
-<script src="script.js"></script>
+<script src="/admin/script.js"></script>
 </body>
 </html>

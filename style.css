@@ -962,6 +962,11 @@ button { font-family: inherit; cursor: pointer; }
   z-index: 5;
 }
 
+.status-badge-coming-soon {
+  border-color: rgba(249, 115, 22, 0.35);
+  color: #fb923c;
+}
+
 .status-badge i {
   font-size: 0.45rem;
   animation: pulse-live 2s infinite;

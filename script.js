@@ -14,9 +14,12 @@ const firebaseConfig = {
 };
 
 let db = null;
+let cmsBootstrapped = false;
+let cmsRetryTimer = null;
 
 function initFirebase() {
     try {
+        if (typeof firebase === 'undefined') return false;
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
         return true;
@@ -58,6 +61,24 @@ async function loadCMSData() {
     } catch (err) {
         console.error('CMS loadCMSData:', err);
     }
+}
+
+function bootstrapCMS(retryCount = 0) {
+    if (cmsBootstrapped) return;
+
+    if (initFirebase()) {
+        cmsBootstrapped = true;
+        loadCMSData();
+        return;
+    }
+
+    if (retryCount >= 20) {
+        console.warn('CMS bootstrap skipped: Firebase SDK unavailable.');
+        return;
+    }
+
+    clearTimeout(cmsRetryTimer);
+    cmsRetryTimer = setTimeout(() => bootstrapCMS(retryCount + 1), 250);
 }
 
 /* ── Helpers ── */
@@ -139,6 +160,10 @@ function renderServices(snap) {
             <div class="service-icon"><i class="${d.icon || 'fas fa-code'}"></i></div>
             <h3>${d.title || ''}</h3>
             <p>${d.description || ''}</p>`;
+        card.innerHTML = card.innerHTML.replace(
+            /<div class="status-badge">[\s\S]*?<\/div>/,
+            `<div class="${statusMeta.className}"><i class="fas fa-circle"></i> ${statusMeta.label}</div>`
+        );
         grid.appendChild(card);
     });
 }
@@ -204,6 +229,20 @@ function renderTools(snap) {
 }
 
 /* ── Render Projects (cards) ── */
+function getProjectStatusMeta(status) {
+    if (status === 'coming-soon') {
+        return {
+            label: 'Yakında hizmetinizde',
+            className: 'status-badge status-badge-coming-soon',
+        };
+    }
+
+    return {
+        label: 'Yayında',
+        className: 'status-badge',
+    };
+}
+
 function renderProjects(snap) {
     const grid = document.getElementById('cms-projects-grid');
     if (!grid || snap.empty) return;
@@ -213,6 +252,7 @@ function renderProjects(snap) {
         const d     = doc.data();
         const delay = i > 0 ? ` delay-${Math.min(i, 3)}` : '';
         const tags  = (d.tags || []).map(t => `<span>${t}</span>`).join('');
+        const statusMeta = getProjectStatusMeta(d.status);
         const card  = document.createElement('article');
         card.className = `project-card glass-card animate-on-scroll${delay}`;
         card.innerHTML = `
@@ -549,7 +589,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
 
     /* Firebase CMS — load async, non-blocking */
-    if (initFirebase()) {
-        loadCMSData();
-    }
+    bootstrapCMS();
+});
+
+window.addEventListener('load', () => {
+    bootstrapCMS();
 });

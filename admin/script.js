@@ -472,6 +472,7 @@ function syncProjectUploadUi(url = '') {
 
 function resetProjectForm() {
     document.getElementById('add-project-form')?.reset();
+    setValue('p-status', 'live');
     syncProjectUploadUi('');
 }
 
@@ -482,6 +483,7 @@ function populateProjectForm(data) {
     setValue('p-code', data.github || '');
     setValue('p-web', data.web || '');
     setValue('p-tags', Array.isArray(data.tags) ? data.tags.join(', ') : '');
+    setValue('p-status', data.status || 'live');
     syncProjectUploadUi(data.img || '');
 }
 
@@ -869,6 +871,7 @@ async function addProject(e) {
             github:    document.getElementById('p-code').value.trim(),
             web:       document.getElementById('p-web').value.trim(),
             tags:      document.getElementById('p-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+            status:    document.getElementById('p-status').value || 'live',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
 
